@@ -5,17 +5,17 @@ public class Main {
         Set<String> VN = new HashSet<>(Arrays.asList("S", "D", "E", "F", "L"));
         Set<String> VT = new HashSet<>(Arrays.asList("a", "b", "c", "d"));
         Map<String, List<String>> productions = new HashMap<>();
-        productions.put("S", Arrays.asList("aD"));
-        productions.put("D", Arrays.asList("bE"));
+        productions.put("S", List.of("aD"));
+        productions.put("D", List.of("bE"));
         productions.put("E", Arrays.asList("cF", "dL"));
-        productions.put("F", Arrays.asList("dD"));
+        productions.put("F", List.of("dD"));
         productions.put("L", Arrays.asList("aL", "bL", "c"));
         Grammar grammar = new Grammar(VN, VT, productions, "S");
         List<String> validStrings = grammar.generateValidStrings(5);
         System.out.println("5 Valid strings: " + validStrings);
 
         Set<String> states = new HashSet<>(Arrays.asList("q0", "q1", "q2", "q3", "q4"));
-        Set<String> acceptingStates = new HashSet<>(Arrays.asList("q0"));
+        Set<String> acceptingStates = new HashSet<>(List.of("q0"));
         Map<String, Map<String, String>> transitions = new HashMap<>();
         transitions.put("q0", new HashMap<>(Map.of("a", "q1")));
         transitions.put("q1", new HashMap<>(Map.of("b", "q0", "a", "q2")));
@@ -27,5 +27,41 @@ public class Main {
         for (String input : testInputs) {
             System.out.println("\"" + input + "\" is: " + finiteAutomaton.accepts(input));
         }
+
+        System.out.println("------------------------------------");
+        System.out.println("According to Chomsky hierarchy this is a " + grammar.classifyGrammar() + " grammar");
+
+
+        Set<String> Q = new HashSet<>(Arrays.asList("q0", "q1", "q2", "q3"));
+        Set<String> Sigma = new HashSet<>(Arrays.asList("a", "b"));
+        Map<Pair<String, String>, String> delta = new HashMap<>();
+        delta.put(new Pair<>("q0", "a"), "q1");
+        delta.put(new Pair<>("q1", "b"), "q2");
+        delta.put(new Pair<>("q2", "b"), "q3");
+        delta.put(new Pair<>("q3", "a"), "q1");
+        delta.put(new Pair<>("q2", "b"), "q2");
+        delta.put(new Pair<>("q1", "a"), "q1");
+        String q0 = "q0";
+        Set<String> F = new HashSet<>(List.of("q3"));
+
+        FA fa = new FA(Q, Sigma, delta, q0, F);
+
+        // Convert the FA to a regular grammar
+        Grammar rg = fa.toRegularGrammar();
+        System.out.println("Regular Grammar:");
+        System.out.println(rg);
+
+        // Check if the FA is deterministic or non-deterministic
+        if (fa.isDeterministic()) {
+            System.out.println("The FA is deterministic.");
+        } else {
+            System.out.println("The FA is non-deterministic.");
+        }
+
+        // Convert the FA to a DFA
+        DFA dfa = fa.toDFA();
+        System.out.println("DFA:");
+        System.out.println(dfa);
+
     }
 }

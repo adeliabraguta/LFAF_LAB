@@ -51,4 +51,58 @@ public class Grammar {
         }
         return true;
     }
+
+    public String classifyGrammar() {
+        if (isType0()) {
+            return "Type-0";
+        }
+
+        if (isType1()) {
+            return "Type-1";
+        }
+
+        if (isType2()) {
+            return "Type-2";
+        }
+
+        return "Type-3";
+    }
+
+    private boolean isType0() {
+        for (String leftSymbol : productions.keySet()) {
+            if (productions.get(leftSymbol).contains("")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isType1() {
+        for (String leftSymbol : productions.keySet()) {
+            for (String production : productions.get(leftSymbol)) {
+                String[] sides = production.split(" ");
+                if (sides.length == 1) {
+                    continue; // Skip productions of the form A -> ε
+                }
+                String lhs = sides[0];
+                String rhs = production.substring(lhs.length() + 1);
+                if (lhs.length() <= rhs.length()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isType2() {
+        for (String leftSymbol : productions.keySet()) {
+            for (String production : productions.get(leftSymbol)) {
+                String[] sides = production.split(" ");
+                if (sides.length == 1 && VN.contains(leftSymbol)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
