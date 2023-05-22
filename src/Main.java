@@ -1,7 +1,6 @@
-import java.util.Arrays;
-import java.util.HashMap;
+import Lexer.*;
+import Parser.*;
 import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
 //        Set<String> VN = new HashSet<>(Arrays.asList("S", "D", "E", "F", "L"));
@@ -78,43 +77,24 @@ public class Main {
 //            System.out.println(e.getMessage());
 //        }
 
-        CNF cnf = new CNF("S",
-                Arrays.asList("S", "A", "B", "C", "E"),
-                Arrays.asList("a", "b"),
-                new HashMap<>() {{
-                    put("S", Arrays.asList("bA", "B"));
-                    put("A", Arrays.asList("a", "aS", "bAaAb"));
-                    put("B", Arrays.asList("AC", "bS", "aAa"));
-                    put("C", Arrays.asList("ε", "AB"));
-                    put("E", Arrays.asList("BA"));
-                }});
+        try {
+            // Input expression
+            String input = "4 + 2 * 3 - 8 / 2";
 
-        cnf.freeGrammarToCNF();
+            // Lexer
+            Lexer lexer = new Lexer(input);
+            List<Token> tokens = lexer.tokenize();
 
-        CNF cnf1 = new CNF("S",
-                Arrays.asList("S", "A", "B", "C", "E"),
-                Arrays.asList("a", "b"),
-                new HashMap<>() {{
-                    put("S", Arrays.asList("aB", "AC"));
-                    put("A", Arrays.asList("a", "ASC", "BC"));
-                    put("B", Arrays.asList("b", "bS"));
-                    put("C", Arrays.asList("ε", "BA"));
-                    put("E", Arrays.asList("bB"));
-                }});
+            // Parser
+            Parser parser = new Parser(tokens);
+            int result = parser.parseExpression();
 
-//        cnf1.freeGrammarToCNF();
+            // Output
+            System.out.println("Expression: " + input);
+            System.out.println("Expression passed");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
 
-        CNF cnf2 = new CNF("S",
-                Arrays.asList("S", "A", "B", "C", "D"),
-                Arrays.asList("a", "b", "d"),
-                new HashMap<>() {{
-                    put("S", Arrays.asList("dB", "A"));
-                    put("A", Arrays.asList("d", "dS", "aBdB"));
-                    put("B", Arrays.asList("a", "aS", "AC"));
-                    put("D", List.of("AB"));
-                    put("C", List.of("bC", "ε"));
-                }});
-
-//        cnf2.freeGrammarToCNF();
     }
 }
